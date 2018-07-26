@@ -1,0 +1,40 @@
+    Error Message 1:
+            (.text+0x14): undefined reference to `Employee::Employee()'
+            (.text+0x60): undefined reference to `Employee::Employee(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, double)'
+            (.text+0xb6): undefined reference to `Employee::get_name[abi:cxx11]() const'
+    Error Message 2:
+            programmer.h:3:22: fatal error: ccc_empl.h: No such file or directory
+            #include "ccc_empl.h"
+                                  ^
+            compilation terminated.
+            In file included from programmer.cpp:1:0:
+            programmer.h:3:22: fatal error: ccc_empl.h: No such file or directory
+            #include "ccc_empl.h"
+                                  ^
+            compilation terminated.
+    Wow!  Linking the files together is a fucking nightmare.  I want to include a class (.h file and .cpp file) in different directory
+    Here is how I got it to work!
+    Solution 1: g++ -I "C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles" ccc_empl.o main.cpp programmer.cpp
+     with this command: g++ -I "C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles" main.cpp programmer.cpp 
+     we get error message 1   
+    But with the precompiled object file made with g++ -c C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles specified, it works.
+    But if its compiled like this: g++ ccc_empl.o main.cpp programmer.cpp, we get error message 2
+        
+    Solution 2: set #include "C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles/ccc_empl.h" with g++ ccc_empl.o main.cpp programmmer.cpp
+    if I compile like g++ main.cpp programmer.cpp I get error message 1.
+    Connundrum: If I just point to the header file's location I get error message 1.  But if I just include an immediate object file error message 2 appears. 
+    I guess I could compile the  ccc class I want and link to the location with -I.  Or I could make them static libraries.
+
+
+    Final Words:
+    It turns out you need the -I to include headers but if the code for class is on a cpp file then the path to it must be specified as well.
+    g++ -I "C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles" main.cpp programmer.cpp C:/Users/Seth/Documents/Big_Cpp_Source_Code/cccfiles/ccc_empl.cpp
+    With #include "ccc_empl.h" or #include <ccc_empl.h> no difference.
+
+Linux solution: g++ -c -I "/home/seth-linux-pc/Documents/Big_Cpp_Source_Code/cccfiles" programmer.cpp 
+g++ -I "/home/seth-linux-pc/Documents/Big_Cpp_Source_Code/cccfiles" programmer.o main.cpp
+Maybe since I force programmer class to be compiled first
+
+Linux static library solution: g++ -c -I ~/Documents/Big_Cpp_Source_Code programmer.cpp -L ~/Documents/Big_Cpp_Lib -lccc
+
+
